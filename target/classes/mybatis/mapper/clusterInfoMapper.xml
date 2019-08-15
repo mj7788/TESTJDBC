@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xugu.owl.dao.ClusterInfoDao">
+
+	<insert id="add" parameterType="clusterInfo" useGeneratedKeys="true" keyProperty="id">
+	    insert into t_cluster_info(name,status,"comment") values(#{name},#{status},#{comment,jdbcType=VARCHAR});
+	</insert>
+    
+    <delete id="delete" parameterType="int">
+    	delete from t_cluster_info where id = #{id};
+    </delete>
+    
+    <select id="findAll" resultType="clusterInfo">
+        select id,name,status,"comment" from t_cluster_info;   
+    </select>
+    
+    <select id="findById" parameterType="int" resultType="clusterInfo">
+    	select id,name,status,"comment" from t_cluster_info where id = #{id};
+    </select>
+    
+    <update id="update" parameterType="clusterInfo">
+        update t_cluster_info set name = #{name}, status = #{status} where id = #{id};
+    </update>
+   
+</mapper>

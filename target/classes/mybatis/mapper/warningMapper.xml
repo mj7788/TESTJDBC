@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xugu.owl.dao.WarningDao">
+	<insert id="add" parameterType="warning">
+	  insert into t_warning(
+	    node_id,
+        warn_type,
+        detail,
+        key_word,
+        resolved,
+        resolved_type，
+        suggestion,
+        create_time,
+        update_time,
+        cluster_id
+	  ) values(
+	    #{nodeId},
+	    #{warnType},
+	    #{detail},
+	    #{keyWord},
+	    #{resolved},
+	    #{resolvedType},
+	    #{suggestion},
+	    #{createTime},
+	    #{updateTime},
+	    #{clusterId}
+	  );
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete from t_warning where id = #{id};
+	</delete>
+	
+	<update id="update" parameterType="warning">
+		update t_warning
+		  <set>
+		    <if test="resolved != null">
+		  		resolved = #{resolved},
+		    </if> 
+		    <if test="resolvedType != null">
+		  		resolved_type = #{resolvedType},
+		  	</if> 
+		  	<if test="updateTime ! = null">
+		  	    update_time = #{updateTime}
+		  	</if>
+		  </set>
+		where id = #{id};
+	</update>
+	
+	<select id="findByClusterId" parameterType="int">
+		select * from warning where cluster_id = #{clusterId};
+	</select>
+</mapper>

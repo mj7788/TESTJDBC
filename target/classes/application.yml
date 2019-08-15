@@ -1,0 +1,57 @@
+logging:
+  config: classpath:logback-spring.xml
+  path: D:/log
+spring:
+  datasource:
+    name: druidDatasource
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:xugu://127.0.0.1:5138/system
+    driver-class-name: com.xugu.cloudjdbc.Driver
+    username: sysdba
+    password: SYSDBA
+    druid:
+      initial-size: 0
+      min-idle: 0
+      max-active: 300
+      validation-query: select 1 from dual
+      validation-query-timeout: 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      keep-alive: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      remove-abandoned: true
+      remove-abandoned-timeout: 60
+      remove-abandoned-timeout-millis: 10000
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=3000
+      filters: slf4j,state
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      stat-view-servlet:
+        enabled: true
+        url-pattern: "/druid/*"
+        login-username: admin
+        login-password: 123456
+  freemarker:
+    suffix: .ftl
+    content-type: text/html
+    # 设置页面编码格式
+    charset: UTF-8
+    # 设置页面缓存
+    cache: false
+    # 设置ftl文件路径
+    template-loader-path:
+      - classpath:/templates
+  # 设置静态文件路径，js,css等
+  mvc:
+    static-path-pattern: /static/**
+mybatis:
+  type-aliases-package: com.xugu.owl.model
+  mapper-locations: 
+    - classpath:mybatis/mapper/*.xml
+  configuration:
+    # 开启驼峰式字段映射
+    map-underscore-to-camel-case: true

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xugu.owl.dao.IngnoreNodeDao">
+
+  <insert id="add" parameterType="ignoreNode">
+    insert into t_ignore_node(node_id,cluster_id) values(#{nodeId},#{clusterId});
+  </insert>
+  
+  <delete id="delete" parameterType="int">
+  	delete from t_ignore_node where id = #{id};
+  </delete>
+  
+  <select id="findByclusterId" parameterType="int" resultType="ignoreNode">
+    select * from t_ignore_node where cluster_id = #{clusterId};
+  </select>
+  
+  <update id="update" parameterType="ignoreNode">
+  	update t_ignore_node set node_id= #{nodeId} where id = #{id};
+  </update>
+</mapper>
