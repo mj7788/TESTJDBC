@@ -6,11 +6,11 @@
    		insert into t_connect_node(ip,port,cluster_id) values(#{ip},#{port},#{clusterId});
    </insert>
    
-   <insert id="addList" parameterType="list">
+   <insert id="addList" parameterType="list" useGeneratedKeys="true" keyProperty="id">
         insert into t_connect_node(ip,port,cluster_id) 
         values
         <foreach collection="list" item="node" index="index" separator="">
-        	(#{item.ip},#{item.port},#{item.clusterId})
+        	(#{node.ip},#{node.port},#{node.clusterId})
         </foreach> 
    </insert>
    

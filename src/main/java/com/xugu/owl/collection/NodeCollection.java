@@ -1,12 +1,12 @@
 package com.xugu.owl.collection;
 
-import java.sql.Connection;
-
-import javax.management.Query;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.xugu.owl.properties.QuerySqlProperties;
 import com.xugu.owl.utils.DataSourceUtil;
 
@@ -14,12 +14,15 @@ import com.xugu.owl.utils.DataSourceUtil;
 public class NodeCollection {
 	
 	@Autowired
-	QuerySqlProperties sqlPro;
+	private QuerySqlProperties sqlPro;
 	
-	public void getSessionCount(int clusterId){
+//	@Autowired
+//	private 
+//	
+	
+	public void getSessionCount(int clusterId) throws JsonProcessingException{
 		String sql = sqlPro.getMap().get("session");
-		Connection con = DataSourceUtil.getConnection(clusterId);
-		
+		List<Map<String, Object>> datas = DataSourceUtil.executeQuery(clusterId, sql);
 	}
 }
   

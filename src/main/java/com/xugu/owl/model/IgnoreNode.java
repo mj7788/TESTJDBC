@@ -9,7 +9,6 @@ public class IgnoreNode {
 	@NotBlank
 	private Integer nodeId;
 	
-	@NotBlank
 	private int clusterId;
 
 	public int getId() {

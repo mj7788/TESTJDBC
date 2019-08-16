@@ -2,25 +2,36 @@ package com.xugu.owl.utils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.xugu.owl.model.ConnectNode;
 import com.xugu.owl.properties.DruidProperties;
 import com.xugu.owl.vo.Cluster;
 
+@Component
 public class DataSourceUtil {
 	
+	@Autowired
+	private DruidProperties pro;
 	
-	private static DruidProperties pro = new DruidProperties();
+	@Autowired
+	private static DruidProperties staicPro;
 
 	public static ConcurrentHashMap<Integer, DataSource> dataSources = new ConcurrentHashMap<>();
 	
@@ -28,6 +39,10 @@ public class DataSourceUtil {
 
 	private static String url = "jdbc:xugu://%s:%d/system%s";
 	
+	@PostConstruct
+	public void init() {
+		staicPro = pro;
+	}
 	private static String getUrl(List<ConnectNode> nodes) {
 		StringBuffer ips = new StringBuffer();
 		String ip = null; 
@@ -46,11 +61,11 @@ public class DataSourceUtil {
 	}
 	
 	public static void putDataSource(Cluster cluster){
-		Map<String, String> map = pro.getMap();
+		Map<String, String> map = staicPro.getMap();
 		map.put("url", getUrl(cluster.getNode()));
 		DataSource dataSource = null;
 		try {
-			dataSource = DruidDataSourceFactory.createDataSource(pro.getMap());
+			dataSource = DruidDataSourceFactory.createDataSource(staicPro.getMap());
 		} catch (Exception e) {
 			log.error("创建连接池失败,集群名称："+cluster.getClusterInfo().getName());
 		}
@@ -63,16 +78,23 @@ public class DataSourceUtil {
 			try {
 				con = dataSources.get(clusterId).getConnection();
 			} catch (SQLException e) {
-				log.error("获取连接失败,集群编号："+clusterId);
+				log.error("获取连接失败,集群号："+clusterId);
 			}
 		} 
 		return con;
 	}
 	
-	public static void close(ResultSet rs,Connection con) {
+	public static void close(ResultSet rs,Statement st,Connection con) {
 		if(rs != null) {
 			try {
 				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if(st != null) {
+			try {
+				st.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -82,6 +104,47 @@ public class DataSourceUtil {
 				con.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * 执行搜集sql
+	 * @param clusterId
+	 * @param sql
+	 * @return
+	 */
+	public static List<Map<String, Object>> executeQuery(int clusterId,String sql){
+		Connection con = getConnection(clusterId);
+		Statement st = null;
+		ResultSet rs = null;
+		if(con == null) 
+			return null;
+		else { 
+			List<Map<String, Object>> datas = new ArrayList<>();
+			try {
+				st = con.createStatement();
+				rs = st.executeQuery(sql);
+				ResultSetMetaData metaData = rs.getMetaData();
+				int count = metaData.getColumnCount();
+				while(rs.next()) {
+					Map<String, Object> data = new HashMap<>();
+					for(int i = 1; i <= count; i++) {
+						String columnName = metaData.getColumnName(i);
+						//如果有别名 则取别名
+						if(metaData.getColumnLabel(i) != null) {
+							columnName = metaData.getColumnLabel(i);
+						}
+						data.put(columnName, rs.getObject(i));
+					}
+					data.put("clusterId", clusterId);
+					datas.add(data);
+				}
+				return datas;
+			} catch (SQLException e) {
+				log.error("收集信息异常，集群号:{}，执行sql:{}，失败原因：{}",clusterId,sql,e.getMessage());
+				return null;
+			} finally {
+				close(rs, st, con);
 			}
 		}
 	}

@@ -1,0 +1,27 @@
+{
+  "groups": [
+    {
+      "name": "",
+      "type": "com.xugu.owl.properties.QuerySqlProperties",
+      "sourceType": "com.xugu.owl.properties.QuerySqlProperties"
+    },
+    {
+      "name": "druid",
+      "type": "com.xugu.owl.properties.DruidProperties",
+      "sourceType": "com.xugu.owl.properties.DruidProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "druid.map",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "sourceType": "com.xugu.owl.properties.DruidProperties"
+    },
+    {
+      "name": "map",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "sourceType": "com.xugu.owl.properties.QuerySqlProperties"
+    }
+  ],
+  "hints": []
+}
